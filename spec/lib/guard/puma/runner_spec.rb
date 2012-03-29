@@ -28,11 +28,7 @@ describe Guard::PumaRunner do
 
     context 'pid file does not exist' do
       it "returns nil" do
-        if defined?(Rubinius)
-          runner.pid.should == nil
-        else
-          runner.pid.should be_nil
-        end
+        runner.pid.should be_nil
       end
     end
   end
