@@ -3,8 +3,6 @@ require 'net/http'
 module Guard
   class PumaRunner
 
-    MAX_WAIT_COUNT = 20
-
     attr_reader :options, :control_url, :control_token, :cmd_opts
 
     def initialize(options)
@@ -26,27 +24,33 @@ module Guard
     end
 
     def start
+      puts "start called"
       system %{sh -c 'cd #{Dir.pwd} && puma #{cmd_opts} &'}
     end
 
     def halt
+      puts "halt called"
       run_puma_command!("halt")
     end
 
     def restart
+      puts "restart called"
       run_puma_command!("restart")
-    end
-
-    def sleep_time
-      options[:timeout].to_f / MAX_WAIT_COUNT.to_f
     end
 
     private
     
     def run_puma_command!(cmd)
-      Net::HTTP.get build_uri(cmd)
+      Net::HTTP.get_response(build_uri(cmd))
+      #Net::HTTP.new(@control, @control_port).start do |http|
+        #req = Net::HTTP::Get.new build_uri(cmd).request_uri
+        #http.request req
+      #end
       return true
-    rescue Errno::ECONNREFUSED => e
+    rescue EOFError
+      # TODO Figure out WHY the stream is being closed
+      return true
+    rescue Errno::ECONNREFUSED
       # server may not have been started correctly.
       false
     end

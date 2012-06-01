@@ -20,21 +20,11 @@ describe Guard::PumaRunner do
       before do
         runner.stub(:build_uri).with(cmd).and_return(uri)
       end
-      let(:uri) { URI("http://#{runner.control_url}/#{cmd}?token=#{runner.control_token}") }
+      let(:uri) { URI "http://#{runner.control_url}/#{cmd}?token=#{runner.control_token}" }
       it "#{cmd}s" do
-        Net::HTTP.should_receive(:get).with(uri).once
+        Net::HTTP.should_receive(:get_response).with(uri).once
         runner.send(cmd.intern)
       end
-    end
-  end
-  
-
-  describe '#sleep_time' do
-    let(:timeout) { 30 }
-    let(:options) { default_options.merge(:timeout => timeout) }
-
-    it "adjusts the sleep time as necessary" do
-      runner.sleep_time.should == (timeout.to_f / Guard::PumaRunner::MAX_WAIT_COUNT.to_f)
     end
   end
 
