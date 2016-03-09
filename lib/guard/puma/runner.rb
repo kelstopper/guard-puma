@@ -8,7 +8,7 @@ module Guard
     attr_reader :options, :control_url, :control_token, :cmd_opts
 
     def initialize(options)
-      @control_token = (options.delete(:control_token) || 'pumarules')
+      @control_token = (options.delete(:control_token) || 'pumarules') unless options[:no_token]
       @control = (options.delete(:control) || '0.0.0.0')
       @control_port = (options.delete(:control_port) || '9293')
       @control_url = "#{@control}:#{@control_port}"
@@ -62,7 +62,7 @@ module Guard
     end
 
     def build_uri(cmd)
-      URI "http://#{control_url}/#{cmd}?token=#{control_token}"
+      URI "http://#{control_url}/#{cmd}#{control_token ? "?token=#{control_token}" : ''}"
     end
 
   end
